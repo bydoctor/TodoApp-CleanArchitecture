@@ -1,0 +1,30 @@
+@TodoApi_HostAddress = http://localhost:5264
+
+GET {{TodoApi_HostAddress}}/api/todos/
+Accept: application/json
+
+###
+
+GET {{TodoApi_HostAddress}}/api/todos/3
+
+###
+
+POST {{TodoApi_HostAddress}}/api/todos
+Content-Type: application/json
+
+{
+  "Title": ""
+}
+
+###
+
+PUT {{TodoApi_HostAddress}}/api/todos/5
+Content-Type: application/json
+
+{
+  "Title": "B",
+  "IsDone": true
+}
+
+###
+DELETE {{TodoApi_HostAddress}}/api/todos/2
