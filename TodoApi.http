@@ -5,7 +5,8 @@ Accept: application/json
 
 ###
 
-GET {{TodoApi_HostAddress}}/api/todos/3
+@id=4
+GET {{TodoApi_HostAddress}}/api/todos/{{id}}
 
 ###
 
