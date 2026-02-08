@@ -1,13 +1,18 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.EventSource;
 using TodoApi.Application.Interfaces;
+using TodoApi.Application.Mappings;
 using TodoApi.Application.Services;
 using TodoApi.Infrastructure.Data;
 using TodoApi.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
+
+builder.Services.AddAutoMapper(cfg =>
+{
+  cfg.AddProfile<TodoProfile>(); 
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

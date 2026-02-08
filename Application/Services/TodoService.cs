@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using TodoApi.Application.DTOs;
 using TodoApi.Application.Interfaces;
@@ -11,26 +12,30 @@ public class TodoService: ITodoService
     private readonly ITodoRepository _todoRepository;
     private readonly IValidator<CreateTodoDto> _createValidator;
     private readonly IValidator<UpdateTodoDto> _updateValidator;
+    private readonly IMapper _mapper;
 
-    public TodoService(ITodoRepository todoRepository, IValidator<CreateTodoDto> createValidator, IValidator<UpdateTodoDto> updateValidator)
+    public TodoService(ITodoRepository todoRepository, IValidator<CreateTodoDto> createValidator, IValidator<UpdateTodoDto> updateValidator, IMapper mapper)
     {
         _todoRepository = todoRepository;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
+        _mapper = mapper;
     }
 
     public async Task<List<TodoDto>> GetAllTodosAsync()
     {
-      var items=  await _todoRepository.GetAllAsync();
+      var entity=  await _todoRepository.GetAllAsync();
       
-      return items.Select(item=> new TodoDto(item.Id, item.Title,item.IsDone,item.UpdatedAt)).ToList();
+      var itemList=_mapper.Map<List<TodoDto>>(entity);
+
+      return itemList;
     }
 
     public async Task<TodoDto?> GetByIdAsync(int id)
     {
-        var item= await _todoRepository.GetByIdAsync(id);
+        var entity= await _todoRepository.GetByIdAsync(id);
 
-        return item is null ? null : new TodoDto(item.Id, item.Title, item.IsDone,item.UpdatedAt);
+        return entity is null ? null : _mapper.Map<TodoDto>(entity);
     }
 
     public async Task CreateTodoAsync(CreateTodoDto newDto)
@@ -43,12 +48,8 @@ public class TodoService: ITodoService
             throw new ValidationException(errorMessages);
         }
 
-        var entity = new TodoItem()
-        {
-            Title = newDto.Title,
-            IsDone = false
-
-        };
+        var entity = _mapper.Map<TodoItem>(newDto);
+        entity.IsDone=false;
         
         await  _todoRepository.AddAsync(entity);
     }
@@ -65,10 +66,9 @@ public class TodoService: ITodoService
         
         if (existingItem is null)
             throw new ArgumentException($"Item with id {id} not found");
+
         
-        
-        existingItem.Title = input.Title;
-        existingItem.IsDone = input.IsDone;
+        _mapper.Map(input, existingItem);
         existingItem.UpdatedAt = DateTime.Now;
         
         await _todoRepository.UpdateAsync(existingItem);
