@@ -12,10 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-builder.Services.AddOutputCache(options =>
-{
-    options.AddBasePolicy(policy => policy.Expire(TimeSpan.FromMinutes(10)));
-});
+builder.Services.AddOutputCache();
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>options.UseSqlite("Data Source=todos.db"));
@@ -43,7 +40,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MapOpenApi().CacheOutput();
+    app.MapOpenApi().CacheOutput(p => p.Expire(TimeSpan.FromMinutes(10)));
 }
 
 app.UseHttpsRedirection();
